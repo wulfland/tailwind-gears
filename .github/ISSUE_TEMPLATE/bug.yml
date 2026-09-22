@@ -1,0 +1,15 @@
+name: Bug report
+description: Describe an observed problem in the catalog.
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Observed and expected behavior
+      description: Include reproduction steps and the baseline revision. Do not include personal data or secrets.
+    validations:
+      required: true
+  - type: textarea
+    id: checks
+    attributes:
+      label: Acceptance checks
+      description: What observable result would demonstrate that this is fixed?
