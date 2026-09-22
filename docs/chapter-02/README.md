@@ -1,16 +1,28 @@
 # Chapter 2: from a request to ready work
 
-This standalone sample supports the planned second-edition exercises. The manuscript's previous order-status scenario has not yet been rewritten to match it.
+Use this sample to follow one piece of work from a request through clarification, planning, and an implementation handoff. All product data and discussion notes are fictional.
 
 ## Start with two issues
 
-1. Create your own repository from this template and clone it. Run the application as described in the root README.
+1. [Fork and clone the sample](../../README.md#fork-the-sample), enable Issues in your fork, and run the application as described in the root README. Check that `origin` points to your fork.
 2. Browse the eight products and open a product. Try `Helmet`, then `HELMET` in search.
 3. Read the two drafts in [backlog.json](backlog.json). Create them manually, or preview `npm run seed:issues -- YOUR-OWNER/YOUR-REPO` and then append `--apply`. The latter needs an authenticated GitHub CLI account with issue-write access. Never seed into the author's repository for your own exercise.
-4. Create a GitHub Project and add the issues. Begin with Todo, In progress, Review, and Done. Keep the category feature in Todo while its questions remain unanswered. The search bug is ready once you have reproduced it and agreed on its checks.
+4. Create a GitHub Project and add the issues from your fork. Begin with Backlog, Ready, In progress, Review, and Done. Keep the category feature in Backlog while its questions remain unanswered. The search bug is ready once you have reproduced it and agreed on its checks.
 5. Choose a small WIP limit that includes agent work and review. For this solo exercise, start only one implementation item at a time.
 
-Repository templates copy files, not your own live issues or a configured Project. The seeding script creates two unassigned issues, with no agent execution or project automation. It checks all open and closed issues for stable markers before creating anything, so rerunning does not duplicate its issues. It never overwrites a reader's edits.
+Forking copies the code and its history, not the author's issues or a configured Project. To use the optional seeding script, run the following from the clone after `npm ci`, replacing `YOUR-USERNAME` and the repository name with your fork. The first command only prints the drafts and target; it makes no GitHub requests.
+
+```sh
+npm run seed:issues -- YOUR-USERNAME/tailwind-gears
+```
+
+Review that output and confirm the target is your fork. Then, with GitHub CLI installed and authenticated, explicitly create the issues:
+
+```sh
+npm run seed:issues -- YOUR-USERNAME/tailwind-gears --apply
+```
+
+Choose manual creation or seeding, not both. The script creates two unassigned issues, with no agent execution or project automation. It checks all open and closed issues for stable markers before creating anything, so rerunning does not duplicate its seeded issues. It cannot recognize manually created copies without those markers. It never overwrites a reader's edits.
 
 ## Prepare the feature
 
@@ -20,7 +32,7 @@ Introduce a support interruption only after you have started work: a visitor rep
 
 ## Delegate the bounded search fix
 
-Only assign Copilot after reviewing your repository's visibility, agent policy, usage allowance, and your available review capacity. Copilot is optional: the same issue can be implemented manually.
+Only assign Copilot after reviewing your fork's visibility, agent policy, usage allowance, and your available review capacity. Confirm the assignment targets your fork and its `main` branch, not the author's upstream repository. Copilot is optional: the same issue can be implemented manually on a branch in your fork. Review the CI workflow and enable Actions in your fork if GitHub requires it before running checks; do not broaden token permissions just to make a check run.
 
 ```text
 Implement the issue "Make product search case-insensitive".
@@ -36,6 +48,8 @@ The durable acceptance criteria are in the issue. `server/catalog.ts` owns match
 
 For this local lab, Done means the fix is reviewed, the checks pass, and you verify it in the built app with `npm run build` and `npm start`. A real service needs its own deployment and acceptance policy; a merged pull request is not deployment evidence.
 
+Keep the resulting pull request inside your fork, with your fork's `main` branch as its base. Check the base repository explicitly when opening a pull request manually. Chapter 3 continues with review of that change; the author's intentionally unfixed baseline is not the merge target.
+
 ## Keep a reproducible start
 
-The `chapter-02-start` tag records the author's baseline. Check out that tag in a fresh clone to repeat the exercise without undoing your existing work. Keep implementation changes in your own repository. The author's baseline intentionally remains unfixed.
+Before implementing the fix, record your starting commit with `git rev-parse HEAD`. To repeat the exercise later, check out that recorded commit in a separate clone; this avoids depending on a moving default branch or undoing your existing work. Keep implementation changes in your fork. The author's baseline intentionally remains unfixed.

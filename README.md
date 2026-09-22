@@ -4,6 +4,27 @@ A small cycling catalog for **Accelerate DevOps with GitHub, second edition**. O
 
 ![Tailwind Gears catalog with eight illustrated cycling products](docs/catalog.png)
 
+## Fork the sample
+
+Use your own fork for the book exercises. Keep your issues, branches, and pull requests there; do not submit the intentional bug fix to the author's repository.
+
+1. Sign in to GitHub and open [wulfland/tailwind-gears](https://github.com/wulfland/tailwind-gears).
+2. Select **Fork**, choose your account as **Owner**, and keep the name `tailwind-gears`. Copying the default branch is sufficient. Select **Create fork**.
+3. In **your fork**, open **Settings**, then **General**. Under **Features**, enable **Issues** if it is not already selected. Forking does not copy the author's issues or create a GitHub Project for you.
+4. Open **Code** in your fork and copy its clone URL. Replace `YOUR-USERNAME` below with your account (and adjust the repository name if you changed it).
+
+```sh
+git clone https://github.com/YOUR-USERNAME/tailwind-gears.git
+cd tailwind-gears
+git remote -v
+```
+
+Confirm that `origin` points to **your fork**, not `wulfland/tailwind-gears`. Open the cloned folder in your editor, then follow **Run locally** below. See GitHub's [forking guide](https://docs.github.com/en/pull-requests/how-tos/work-with-forks/fork-a-repo) for Git setup and authentication help.
+
+Your fork of this public repository is public too. Use only the supplied fictional data and approved exercise notes. Do not add company code, meeting transcripts, personal data, or credentials. If your organization requires private practice, use an approved independent private repository instead of a public fork.
+
+When you reach the implementation exercise, create a branch in your fork. Open its pull request against **your fork's `main` branch**; check the **base repository** because GitHub may offer the author's upstream repository. You do not need to sync from upstream during the exercise.
+
 ## Run locally
 
 Use Node.js 24 LTS and npm. No database, cloud account, secrets, or AI subscription is required.
@@ -36,7 +57,7 @@ This command **must fail on the starting version**. It expresses the desired cas
 
 Category filtering is a separate, unimplemented feature for planning. Categories are already present in the data. Search, price/name sorting, stock filtering, empty/error states, URL state, and accessible product details work without it.
 
-Start with the [Chapter 2 exercise](docs/chapter-02/README.md), [two-issue backlog](docs/chapter-02/backlog.json), and [fictional meeting transcript](docs/chapter-02/meeting-transcript.md). Use **Use this template** to create your own repository. Do not run exercises in the author's issue tracker. The tag `chapter-02-start` identifies the initial baseline.
+Start with the [Chapter 2 exercise](docs/chapter-02/README.md), [two-issue backlog](docs/chapter-02/backlog.json), and [fictional meeting transcript](docs/chapter-02/meeting-transcript.md). Create the two issues in your fork, either manually from the drafts or with the preview-first commands in the exercise guide. Do not run exercises in the author's issue tracker.
 
 ## Verify
 
