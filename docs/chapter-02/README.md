@@ -48,7 +48,7 @@ The durable acceptance criteria are in the issue. `server/catalog.ts` owns match
 
 For this local lab, Done means the fix is reviewed, the checks pass, and you verify it in the built app with `npm run build` and `npm start`. A real service needs its own deployment and acceptance policy; a merged pull request is not deployment evidence.
 
-Keep the resulting pull request inside your fork, with your fork's `main` branch as its base. Check the base repository explicitly when opening a pull request manually. Chapter 3 continues with review of that change; the author's intentionally unfixed baseline is not the merge target.
+Keep the resulting pull request inside your fork, with your fork's `main` branch as its base. Check the base repository explicitly when opening a pull request manually. The [Chapter 3 exercise](../chapter-03/README.md) continues with review of that change; the author's intentionally unfixed baseline is not the merge target.
 
 ## Keep a reproducible start
 

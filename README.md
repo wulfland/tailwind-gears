@@ -59,6 +59,8 @@ Category filtering is a separate, unimplemented feature for planning. Categories
 
 Start with the [Chapter 2 exercise](docs/chapter-02/README.md), [two-issue backlog](docs/chapter-02/backlog.json), and [fictional meeting transcript](docs/chapter-02/meeting-transcript.md). Create the two issues in your fork, either manually from the drafts or with the preview-first commands in the exercise guide. Do not run exercises in the author's issue tracker.
 
+Continue with the [Chapter 3 review exercise](docs/chapter-03/README.md) to inspect the proposed search fix, assess optional Copilot assistance, and merge and verify the change in your own fork. The guide includes both solo self-review and independent-review requirements.
+
 ## Verify
 
 ```sh
