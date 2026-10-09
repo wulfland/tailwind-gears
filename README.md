@@ -61,6 +61,8 @@ Start with the [Chapter 2 exercise](docs/chapter-02/README.md), [two-issue backl
 
 Continue with the [Chapter 3 review exercise](docs/chapter-03/README.md) to inspect the proposed search fix, assess optional Copilot assistance, and merge and verify the change in your own fork. The guide includes both solo self-review and independent-review requirements.
 
+The [Chapter 4 optional activities](docs/chapter-04/README.md) cover written handoffs, choosing collaboration tools, reproducing the sample in Codespaces, and a documentation-only agent task. They work with the unfixed baseline or a corrected fork; do not repeat the search fix or implement the unresolved category feature for that chapter.
+
 ## Verify
 
 ```sh
