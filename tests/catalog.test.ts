@@ -11,6 +11,12 @@ test('search finds matching names and trims outer whitespace', () => {
   assert.deepEqual(listProducts(' Helmet ').map(product => product.id), ['ridge-helmet', 'metro-helmet'])
 })
 
+test('search matches product names regardless of case', () => {
+  for (const query of ['Helmet', 'HELMET', 'helmet', 'HeLmEt', '  hElM  ']) {
+    assert.deepEqual(listProducts(query).map(product => product.id), ['ridge-helmet', 'metro-helmet'], `Search: ${query}`)
+  }
+})
+
 test('unknown search has no matches', () => {
   assert.deepEqual(listProducts('Spaceship'), [])
 })
@@ -18,6 +24,15 @@ test('unknown search has no matches', () => {
 test('stock filtering can be combined with search', () => {
   assert.equal(listProducts('', 'featured', true).length, 7)
   assert.deepEqual(listProducts('Lock', 'featured', true), [])
+  assert.deepEqual(listProducts('lOcK').map(product => product.id), ['loop-lock'])
+  assert.deepEqual(listProducts('lOcK', 'featured', true), [])
+})
+
+test('case-insensitive search can be combined with sorting and stock filtering', () => {
+  for (const sort of ['price-asc', 'name'] as const) {
+    assert.deepEqual(listProducts('HELMET', sort, true).map(product => product.id), ['metro-helmet', 'ridge-helmet'])
+  }
+  assert.deepEqual(listProducts('HELMET', 'price-desc', true).map(product => product.id), ['ridge-helmet', 'metro-helmet'])
 })
 
 test('sorting leaves source order intact', () => {
