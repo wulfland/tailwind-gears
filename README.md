@@ -63,7 +63,7 @@ Continue with the [Chapter 3 review exercise](docs/chapter-03/README.md) to insp
 
 The [Chapter 4 optional activities](docs/chapter-04/README.md) cover written handoffs, choosing collaboration tools, reproducing the sample in Codespaces, and a documentation-only agent task. They work with the unfixed baseline or a corrected fork; do not repeat the search fix or implement the unresolved category feature for that chapter.
 
-The [Chapter 11 optional activities](docs/chapter-11/README.md) cover reading and running the CI workflow, adding an Arm job, promoting a build through `staging` and `production` environments with a required reviewer, drafting a workflow change with Copilot against an instructions file, and summarizing commits with Copilot CLI inside a workflow. The reference workflow files are in `docs/chapter-11/workflows/`; nothing runs until you copy a file into your fork's `.github/workflows/`. The Copilot activities need a Copilot plan; the workflow activity consumes AI credits from a paid plan.
+The [Chapter 11 optional activities](docs/chapter-11/README.md) cover reading and running the CI workflow, adding an Arm job, promoting a build through `staging` and `production` environments with a required reviewer, drafting a workflow change with Copilot against an instructions file, investigating a failed CI run with a GitHub Agentic Workflow, and summarizing commits with Copilot CLI inside a workflow. The reference workflow files are in `docs/chapter-11/workflows/`; nothing runs until you copy a file into your fork's `.github/workflows/`. The Copilot activities need a Copilot plan; the agentic workflow and the Copilot CLI activities consume AI credits from a paid plan.
 
 ## Verify
 

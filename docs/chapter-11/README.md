@@ -8,11 +8,12 @@ Use **your fork** for branches, pull requests, environments, and workflow runs, 
 - [Running the checks on an Arm runner](#running-the-checks-on-an-arm-runner)
 - [Promoting a build through staging and production](#promoting-a-build-through-staging-and-production)
 - [Drafting a workflow change with Copilot](#drafting-a-workflow-change-with-copilot)
+- [Investigating a failed run with an agentic workflow](#investigating-a-failed-run-with-an-agentic-workflow)
 - [Summarizing commits with Copilot CLI in a workflow](#summarizing-commits-with-copilot-cli-in-a-workflow)
 
-GitHub product instructions were checked against official documentation on October 21, 2026. Standard GitHub-hosted runners are free for public repositories, so the first three activities cost nothing in a public fork. The Copilot activities need a Copilot plan; the last one consumes AI credits from a paid plan. Check current access, policy, and billing before using cloud services or preview features. Public practice material must not contain real customer information, internal conversations, or credentials.
+GitHub product instructions were checked against official documentation on October 21, 2026. Standard GitHub-hosted runners are free for public repositories, so the first three activities cost nothing in a public fork. The Copilot activities need a Copilot plan; the agentic workflow activity and the Copilot CLI activity consume AI credits from a paid plan, and the agentic workflow activity also needs the GitHub CLI with the `gh aw` extension and a fine-grained personal access token stored as a secret in your fork. Check current access, policy, and billing before using cloud services or preview features. Public practice material must not contain real customer information, internal conversations, or credentials.
 
-The complete files for the activities are in [`workflows/`](workflows/): [`ci-with-arm.yml`](workflows/ci-with-arm.yml), [`deploy.yml`](workflows/deploy.yml), [`workflows.instructions.md`](workflows/workflows.instructions.md), and [`ai-summary.yml`](workflows/ai-summary.yml). They are reference copies; nothing runs until you place a copy under `.github/workflows/` or `.github/instructions/` in your fork.
+The complete files for the activities are in [`workflows/`](workflows/): [`ci-with-arm.yml`](workflows/ci-with-arm.yml), [`deploy.yml`](workflows/deploy.yml), [`workflows.instructions.md`](workflows/workflows.instructions.md), [`ci-investigator.md`](workflows/ci-investigator.md), and [`ai-summary.yml`](workflows/ai-summary.yml). They are reference copies; nothing runs until you place a copy under `.github/workflows/` or `.github/instructions/` in your fork, and the agentic workflow also needs its compiled `.lock.yml` file beside it.
 
 ## Enabling and reading the sample's CI workflow
 
@@ -115,6 +116,33 @@ The group combines the workflow name and the Git ref, so each pull request and t
 6. Merge or close the pull request and delete the branch.
 
 **Expected result:** a reviewed concurrency change with an explanation you can repeat, and an instructions file that applies the team's rules to the next workflow change. **Return to the book:** continue with *Running AI inside workflows and troubleshooting with it*.
+
+## Investigating a failed run with an agentic workflow
+
+**Starting point:** your fork with Actions enabled, a local clone of it, a Copilot plan on your account, and the GitHub CLI version 2.0.0 or later signed in with `gh auth login --scopes repo,workflow`. The complete workflow file is [`workflows/ci-investigator.md`](workflows/ci-investigator.md); it follows the trigger and output pattern of GitHub's [CI Doctor](https://github.com/githubnext/agentics/blob/main/workflows/ci-doctor.md) sample. GitHub Agentic Workflows are in public preview and may change; see [About GitHub Agentic Workflows](https://docs.github.com/en/copilot/concepts/agents/about-github-agentic-workflows) and check the current documentation before you start.
+
+### Storing the token
+
+1. Your fork is a personal repository, so the workflow cannot bill the job's own token. Create a fine-grained personal access token with the **Copilot Requests** permission set to **Read** and nothing else, with a short expiration; see [Creating GitHub Agentic Workflows](https://docs.github.com/en/copilot/how-tos/github-agentic-workflows/creating-github-agentic-workflows).
+2. In your fork, open **Settings**, **Secrets and variables**, **Actions**, select **New repository secret**, and store the token as `COPILOT_GITHUB_TOKEN`. Every run of the workflow draws AI credits from your Copilot plan; check your plan's allowance before you continue.
+
+### Adding the workflow
+
+3. Install the extension with `gh extension install github/gh-aw`. In your clone, create a branch `practice/ch11-agentic` and copy the reference file to `.github/workflows/ci-investigator.md`.
+4. Run `gh aw compile` from the repository root. It validates the frontmatter and writes `.github/workflows/ci-investigator.lock.yml`. Open the lock file and read it once: find the jobs that the compiler generated around the agent and the `uses` references pinned to commit SHAs. Do not edit the lock file.
+5. Commit both files, push the branch, and open a pull request against **your fork's `main`**. Check the base repository before creating it. Read the diff as a reviewer, then merge it; the trigger only works once the compiled workflow is on the default branch.
+
+### Producing a failure and reading the result
+
+6. Create a branch `practice/ch11-failure`. In `.github/workflows/ci.yml`, add the step `- run: npm run test:exercise` after the `npm run check` step of the `verify` job, and open a pull request against your fork's `main`. On the unfixed baseline, the exercise check fails by design, which gives the agent a real cause to find. If your fork already contains the Chapter 3 search fix, the check passes; use a step `- run: exit 1` named `Deliberate failure` instead.
+7. Wait for the CI run to fail. The agentic workflow starts when that run completes: open **Actions**, select **Investigate the failed CI run** in the sidebar, and follow its jobs. When it finishes, open the issue whose title starts with `[CI failure]` and compare its diagnosis with the cause you know.
+8. Record what the agent read and what it concluded, then close the practice pull request without merging, close the issue, and delete the branch. Run `gh aw logs` to see the run's duration and AI credits; `gh aw audit RUN-ID` shows the turn count and token usage of a single run.
+
+The agent's token is read-only, the issue is created by a separate job after the threat-detection job has checked the agent's output, and nothing else can be changed by this workflow; see the [security architecture](https://github.github.com/gh-aw/introduction/architecture/) and [safe outputs](https://github.github.com/gh-aw/reference/safe-outputs/) references. Keep the workflow if you want to extend it, or remove both files through a pull request. A workflow that stays consumes credits on every failed run.
+
+For the **manual alternative**, run steps 3 and 4 in your clone without pushing anything and read the compiled file, or read GitHub's CI Doctor sample. The chain of jobs is what the activity teaches; the issue is the proof that it ran.
+
+**Expected result:** an issue that names the failing step and its cause, created by a workflow whose agent could not have changed anything else; no fix merged. **Return to the book:** continue with *Troubleshooting with AI and controlling cost*.
 
 ## Summarizing commits with Copilot CLI in a workflow
 
