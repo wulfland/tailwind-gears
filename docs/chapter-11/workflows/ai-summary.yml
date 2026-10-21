@@ -1,0 +1,29 @@
+# Chapter 11 reference workflow. Copy this file to .github/workflows/ai-summary.yml in
+# your fork. It runs Copilot CLI once, on demand, with read access and one allowed
+# tool, and writes the draft to the job summary. It consumes AI credits from the
+# Copilot plan that pays for the repository.
+name: AI summary
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  copilot-requests: write
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 20
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: npm install -g @github/copilot
+      - name: Summarize the last ten commits
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          copilot -p "Summarize the last ten commits as release notes. Use git log only. Write Markdown with one bullet per commit." \
+            -s --allow-tool='shell(git log:*)' --no-ask-user > summary.md
+          cat summary.md >> "$GITHUB_STEP_SUMMARY"
