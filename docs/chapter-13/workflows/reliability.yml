@@ -1,0 +1,34 @@
+# Chapter 13 reference workflow. Copy this file to .github/workflows/reliability.yml
+# in your fork. It runs the browser suite several times against the same build of
+# main, on a schedule and on demand, so that a test which passes only sometimes
+# shows up as "flaky" in the report instead of as a red pull request. It never
+# blocks a merge; it produces evidence for a person to act on.
+name: Reliability
+on:
+  schedule:
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  repeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Run the browser suite five times with one retry
+        run: npx playwright test --repeat-each 5 --retries 1 --reporter=line,github
+      - name: Keep the report for a person to read
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 14
