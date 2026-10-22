@@ -65,6 +65,8 @@ The [Chapter 4 optional activities](docs/chapter-04/README.md) cover written han
 
 The [Chapter 11 optional activities](docs/chapter-11/README.md) cover reading and running the CI workflow, adding an Arm job, promoting a build through `staging` and `production` environments with a required reviewer, drafting a workflow change with Copilot against an instructions file, investigating a failed CI run with a GitHub Agentic Workflow, and summarizing commits with Copilot CLI inside a workflow. The reference workflow files are in `docs/chapter-11/workflows/`; nothing runs until you copy a file into your fork's `.github/workflows/`. The Copilot activities need a Copilot plan; the agentic workflow and the Copilot CLI activities consume AI credits from a paid plan.
 
+The [Chapter 12 optional activities](docs/chapter-12/README.md) cover protecting `main` with a ruleset, merging a change through a short-lived branch with auto-merge, deploying a small behavior change dark behind a feature flag (a registry in `server/flags.ts` with an owner, an expiry, and a default, overridden per process through the `TG_FLAGS` environment variable and per deployment environment through an Actions variable), releasing it through a Copilot cloud agent pull request under the same rules, and retiring it with an expiry check and a cleanup pull request. The reference files are in `docs/chapter-12/flags/`; the baseline does not contain the flag. Readers who complete every activity end with a fork whose featured order always shows sold-out products last. The two agent activities need a paid Copilot plan and consume AI credits; each has a manual alternative.
+
 ## Verify
 
 ```sh
