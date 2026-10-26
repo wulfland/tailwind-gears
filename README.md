@@ -69,6 +69,8 @@ The [Chapter 12 optional activities](docs/chapter-12/README.md) cover protecting
 
 The [Chapter 13 optional activities](docs/chapter-13/README.md) cover mapping the sample's test files onto the levels of the test pyramid with their timings and coverage, adding a coverage gate to the CI workflow and a scheduled reliability run that repeats the browser suite, running a chaos experiment on your machine with a small fault injector (`TG_CHAOS=products-503:3` fails every third catalog list request) and its tests, and generating tests with Copilot and keeping only the ones a hand-made mutation can break. The reference files are in `docs/chapter-13/chaos/` and `docs/chapter-13/workflows/`; the baseline does not contain the injector or the reliability workflow, and the injector does nothing while the variable is unset. The first three activities cost nothing; the fourth needs a Copilot plan and has a manual alternative.
 
+The [Chapter 14 optional activities](docs/chapter-14/README.md) cover writing a threat model for the catalog with four abuse-case tests that pin properties the API already has, running a tabletop drill for a compromised contributor against the fork's real settings without executing anything, hardening the dev container configuration so that a codespace runs as a non-root user with one labeled private port and no access beyond its repository, and reviewing an assistant's proposed image endpoint against a checklist and a path-traversal test. The reference files are in `docs/chapter-14/security/` and `docs/chapter-14/devcontainer/`; the baseline does not contain them. The first two activities cost nothing, the third uses the Codespaces quota, and the fourth needs a Copilot plan and has a manual alternative.
+
 ## Verify
 
 ```sh

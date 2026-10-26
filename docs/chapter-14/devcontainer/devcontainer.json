@@ -1,0 +1,20 @@
+{
+  "name": "Tailwind Gears (least privilege)",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:24",
+  "remoteUser": "node",
+  "containerUser": "node",
+  "hostRequirements": { "cpus": 2, "memory": "4gb" },
+  "forwardPorts": [5173],
+  "portsAttributes": {
+    "5173": { "label": "Catalog", "onAutoForward": "notify" }
+  },
+  "postCreateCommand": "npm ci",
+  "customizations": {
+    "codespaces": {
+      "repositories": {}
+    },
+    "vscode": {
+      "settings": { "settingsSync.ignoredSettings": [] }
+    }
+  }
+}
