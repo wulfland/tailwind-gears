@@ -1,0 +1,23 @@
+# Chapter 15 reference workflow. Copy it to .github/workflows/dependency-review.yml
+# in your fork. On every pull request it compares the dependency graph of the base
+# and head revisions, fails on a vulnerability of high severity or above or on a
+# denied package, and posts its summary as a comment.
+name: Dependency review
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: high
+          deny-packages: pkg:npm/left-pad
+          comment-summary-in-pr: always
