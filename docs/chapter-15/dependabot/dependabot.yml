@@ -1,0 +1,23 @@
+# Chapter 15 reference file. Copy it to .github/dependabot.yml in your fork.
+# Weekly version updates for npm and for the actions in your workflows, with the
+# development tools grouped into one pull request and a seven-day cooldown so
+# that a release has to survive a week before Dependabot proposes it. Security
+# updates are not delayed by the cooldown.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      dev-tooling:
+        dependency-type: development
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7

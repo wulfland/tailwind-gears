@@ -1,0 +1,90 @@
+# Chapter 15 reference workflow. Replace .github/workflows/deploy.yml from Chapter 11
+# with this file in your fork. Instead of building, it downloads the archive that a
+# Release run attested (give the run's id as the input), verifies the attestation
+# against this repository and the release workflow, and only then deploys the
+# archive through the staging and production environments from Chapter 11.
+name: Deploy
+on:
+  workflow_dispatch:
+    inputs:
+      release_run_id:
+        description: The id of the Release workflow run whose artifact to deploy
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Download the attested archive
+        run: gh run download "${{ inputs.release_run_id }}" --repo "$GITHUB_REPOSITORY" --name site
+      - name: Verify the build's provenance
+        run: |
+          gh attestation verify tailwind-gears-site.tgz \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: verified-site
+          path: tailwind-gears-site.tgz
+  deploy-staging:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: staging
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v8
+        with:
+          name: verified-site
+      - run: tar -xzf tailwind-gears-site.tgz
+      - name: Start the build and check the catalog API
+        run: |
+          npm start &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:5173/api/health && break
+            sleep 1
+          done
+          curl -sf "http://127.0.0.1:5173/api/products?q=Helmet" > smoke.json
+          grep -q '"total":2' smoke.json
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v8
+        with:
+          name: verified-site
+      - run: tar -xzf tailwind-gears-site.tgz
+      - name: Start the build and check the catalog API
+        run: |
+          npm start &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:5173/api/health && break
+            sleep 1
+          done
+          curl -sf "http://127.0.0.1:5173/api/products?q=Helmet" > smoke.json
+          grep -q '"total":2' smoke.json
