@@ -1,0 +1,34 @@
+# Chapter 15 reference workflow. Copy it to .github/workflows/release.yml in your
+# fork. It builds the catalog, packs the built site into one archive, attests the
+# archive (SLSA Build Level 2 on a GitHub-hosted runner), and uploads it as the
+# artifact "site" for the deployment workflow to verify.
+name: Release
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: tar -czf tailwind-gears-site.tgz dist
+      - name: Attest the build
+        uses: actions/attest@v4
+        with:
+          subject-path: tailwind-gears-site.tgz
+      - uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: tailwind-gears-site.tgz
