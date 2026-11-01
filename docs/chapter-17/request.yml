@@ -1,0 +1,43 @@
+name: Request from another team
+description: Ask the Catalog API team for a change, a service, or help.
+title: "[Request] "
+labels: ["cross-team-request"]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you need, and why?
+      description: Describe the outcome you need, not the solution. Link the issue in your own repository if there is one.
+    validations:
+      required: true
+  - type: input
+    id: by-when
+    attributes:
+      label: By when does it matter?
+      placeholder: "2026-12-01, or 'no fixed date'"
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Which interaction mode do you expect?
+      options:
+        - X-as-a-Service (we use something you already provide)
+        - Collaboration (we need to work it out together for a while)
+        - Facilitation (we need help learning something)
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Who can we ask follow-up questions?
+      placeholder: "@your-handle"
+    validations:
+      required: true
+  - type: checkboxes
+    id: data
+    attributes:
+      label: Practice data
+      options:
+        - label: This request contains no real customer information, internal conversations, or credentials.
+          required: true
