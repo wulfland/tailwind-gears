@@ -1,0 +1,63 @@
+name: Hypothesis
+description: Register a hypothesis and the experiment that will test it before any code is written.
+title: "[Hypothesis] "
+labels: ["hypothesis"]
+body:
+  - type: textarea
+    id: belief
+    attributes:
+      label: We believe that
+      description: Who is affected, what we change for them, and why we think it helps. One sentence each.
+      placeholder: "We believe visitors who see the cheapest products first open more product details, because price is the first thing a new visitor compares."
+    validations:
+      required: true
+  - type: input
+    id: metric
+    attributes:
+      label: We will measure
+      description: One metric that would move if the belief is true, with its current baseline.
+      placeholder: "Share of exposed visitors who open at least one product detail; baseline about 30% last month"
+    validations:
+      required: true
+  - type: input
+    id: effect
+    attributes:
+      label: Smallest effect worth acting on
+      description: The absolute change that would change the decision. Smaller results are not worth the cost of the change.
+      placeholder: "5 percentage points"
+    validations:
+      required: true
+  - type: input
+    id: audience
+    attributes:
+      label: Audience and duration
+      description: Who is in the experiment, how they are split, and how long it runs. Decide the duration now; do not stop early.
+      placeholder: "All visitors who open the catalog with the default order and no query, split 50/50 by visitor cookie, for 14 days"
+    validations:
+      required: true
+  - type: textarea
+    id: guardrails
+    attributes:
+      label: Guardrails
+      description: Metrics that must not get worse while the experiment runs, and what you do if one does.
+      placeholder: "Catalog error rate and median response time unchanged; the experiment is switched off if either degrades."
+    validations:
+      required: true
+  - type: dropdown
+    id: decision
+    attributes:
+      label: Decision rule
+      description: Written down before the experiment starts, so that the result decides and not the mood on the day.
+      options:
+        - Ship if the effect meets the minimum at the registered significance level; otherwise remove the change
+        - Ship if no guardrail degrades, whatever the effect (a change we want anyway; this is not an experiment)
+        - Iterate on the design if the effect is positive but below the minimum; remove it if it is negative
+    validations:
+      required: true
+  - type: checkboxes
+    id: practice
+    attributes:
+      label: Practice data
+      options:
+        - label: This hypothesis uses fictional sample data and contains no real customer information.
+          required: true
