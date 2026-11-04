@@ -1,0 +1,42 @@
+# Reference conversion of docs/chapter-19/migration/azure-pipelines.yml.
+# Compare your assistant's conversion with this file and with .github/workflows/ci.yml.
+# Copy it to .github/workflows/ci-converted.yml on a branch of your fork to run it.
+name: CI (converted)
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      # UseNode@1 becomes setup-node; the npm cache is a GitHub addition.
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      # AzureKeyVault@2 and the catalog-ci variable group have no equivalent in a
+      # workflow file. The token becomes an Actions secret that someone creates by
+      # hand, or the job signs in to Azure with OIDC and reads Key Vault itself.
+      - run: npx playwright test --reporter=list,junit
+        env:
+          PREVIEW_TOKEN: ${{ secrets.PREVIEW_TOKEN }}
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: results/junit.xml
+      # PublishTestResults@2 has no built-in equivalent; the results are kept as an artifact.
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: browser-test-results
+          path: results/junit.xml
+      # PublishPipelineArtifact@1 becomes upload-artifact.
+      - uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: dist

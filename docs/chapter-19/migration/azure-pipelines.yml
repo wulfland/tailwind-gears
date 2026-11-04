@@ -1,0 +1,59 @@
+# Constructed Azure Pipelines definition for the Tailwind Gears catalog.
+# This is the "before" of the Chapter 19 conversion activity. The sample never
+# ran on Azure Pipelines; the file exists so that you can convert something real
+# in shape without needing an Azure DevOps organization.
+trigger:
+  branches:
+    include:
+      - main
+pr:
+  branches:
+    include:
+      - '*'
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: catalog-ci   # a variable group in the Azure DevOps library, not a file in the repository
+
+steps:
+  - task: UseNode@1
+    displayName: Use Node.js 24
+    inputs:
+      version: '24.x'
+
+  - task: AzureKeyVault@2
+    displayName: Read the preview token from Key Vault
+    inputs:
+      azureSubscription: tailwind-azure   # a service connection; nothing like it exists on GitHub
+      KeyVaultName: tailwind-kv
+      SecretsFilter: PREVIEW_TOKEN
+
+  - script: npm ci
+    displayName: Install dependencies
+
+  - script: npm run check
+    displayName: Type check, unit tests, build
+
+  - script: npx playwright install --with-deps chromium
+    displayName: Install Chromium
+
+  - script: npx playwright test --reporter=list,junit
+    displayName: Browser tests
+    env:
+      PREVIEW_TOKEN: $(PREVIEW_TOKEN)
+      PLAYWRIGHT_JUNIT_OUTPUT_NAME: results/junit.xml
+
+  - task: PublishTestResults@2
+    displayName: Publish browser test results
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: JUnit
+      testResultsFiles: results/junit.xml
+
+  - task: PublishPipelineArtifact@1
+    displayName: Keep the built site
+    inputs:
+      targetPath: dist
+      artifact: site
