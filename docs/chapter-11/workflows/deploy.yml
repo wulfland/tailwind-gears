@@ -1,6 +1,7 @@
 # Chapter 11 reference workflow. Copy this file to .github/workflows/deploy.yml in
-# your fork. It deploys the built catalog to the runner that built it, which is
-# enough to practice environments, approvals, and promotion without a cloud account.
+# your fork. Each deployment job downloads the build and runs it on its own
+# short-lived runner, which is enough to practice environments, approvals, and
+# promotion without a cloud account.
 name: Deploy
 on:
   workflow_dispatch:
