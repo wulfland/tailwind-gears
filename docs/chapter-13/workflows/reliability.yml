@@ -24,7 +24,7 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: Run the browser suite five times with one retry
-        run: npx playwright test --repeat-each 5 --retries 1 --reporter=line,github
+        run: npx playwright test --repeat-each 5 --retries 1 --reporter=line,github,html
       - name: Keep the report for a person to read
         if: ${{ always() }}
         uses: actions/upload-artifact@v7
