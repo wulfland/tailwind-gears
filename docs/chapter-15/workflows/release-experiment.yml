@@ -1,11 +1,15 @@
 # Chapter 15 reference workflow for the first provenance experiment. Copy it to
-# .github/workflows/release-experiment.yml on a practice branch. It builds and
-# attests the same archive as release.yml, but it is a different workflow, so a
-# deployment that verifies with --signer-workflow release.yml must reject its
-# artifact even though the signature is valid.
+# .github/workflows/release-experiment.yml on a branch named practice/... and push.
+# It runs on that push: a workflow file that exists only on a practice branch
+# cannot be started by hand, because workflow_dispatch needs the file on the
+# default branch. It builds and attests the same archive as release.yml, but it
+# is a different workflow, so a deployment that verifies with --signer-workflow
+# release.yml must reject its artifact even though the signature is valid.
 name: Release experiment
 on:
-  workflow_dispatch:
+  push:
+    branches: ['practice/**']
+    paths: ['.github/workflows/release-experiment.yml']
 permissions:
   contents: read
 jobs:

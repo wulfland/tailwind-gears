@@ -1,8 +1,12 @@
 # Chapter 15 reference workflow. Replace .github/workflows/deploy.yml from Chapter 11
 # with this file in your fork. Instead of building, it downloads the archive that a
-# Release run attested (give the run's id as the input), verifies the attestation
-# against this repository and the release workflow, and only then deploys the
-# archive through the staging and production environments from Chapter 11.
+# Release run attested (give the run's id as the input) and verifies the attestation
+# against this repository, the release workflow, the main branch, and the commit of
+# that run. Only then does it deploy the archive through the staging and production
+# environments from Chapter 11. The archive holds the built site only; the server
+# runs from a checkout, so both environments check out exactly the verified commit.
+# Outside a terminal, gh attestation verify prints nothing when it succeeds, so the
+# step sets GH_FORCE_TTY for that one command to get its criteria and result in the log.
 name: Deploy
 on:
   workflow_dispatch:
@@ -22,16 +26,25 @@ jobs:
     permissions:
       contents: read
       actions: read
+      attestations: read
+    outputs:
+      commit: ${{ steps.provenance.outputs.commit }}
     env:
       GH_TOKEN: ${{ github.token }}
+      RELEASE_RUN_ID: ${{ inputs.release_run_id }}
     steps:
       - name: Download the attested archive
-        run: gh run download "${{ inputs.release_run_id }}" --repo "$GITHUB_REPOSITORY" --name site
+        run: gh run download "$RELEASE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name site
       - name: Verify the build's provenance
+        id: provenance
         run: |
-          gh attestation verify tailwind-gears-site.tgz \
+          commit="$(gh run view "$RELEASE_RUN_ID" --repo "$GITHUB_REPOSITORY" --json headSha --jq .headSha)"
+          GH_FORCE_TTY=120 gh attestation verify tailwind-gears-site.tgz \
             --repo "$GITHUB_REPOSITORY" \
-            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml"
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" \
+            --source-ref refs/heads/main \
+            --source-digest "$commit"
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v7
         with:
           name: verified-site
@@ -44,6 +57,8 @@ jobs:
       name: staging
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.verify.outputs.commit }}
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
@@ -63,13 +78,15 @@ jobs:
           curl -sf "http://127.0.0.1:5173/api/products?q=Helmet" > smoke.json
           grep -q '"total":2' smoke.json
   deploy-production:
-    needs: deploy-staging
+    needs: [verify, deploy-staging]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment:
       name: production
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.verify.outputs.commit }}
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc

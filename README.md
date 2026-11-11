@@ -104,6 +104,7 @@ npm run test:e2e
 | `tests/`, `e2e/` | Unit, API, tooling, and browser regression tests |
 | `exercises/` | Explicitly failing teaching checks |
 | `scripts/seed-issues.ts` | Preview-first, repeatable issue creation |
+| `.github/workflows/` | CI workflow and `actions.lock`, the generated lockfile that pins its actions |
 
 API endpoints: `GET /api/health`, `GET /api/products?q=Helmet&sort=price-asc&inStock=true`, and `GET /api/products/ridge-helmet`. Supported sorts are `featured`, `name`, `price-asc`, and `price-desc`. Prices are integer euro cents. Product data is read-only and resets with the code; there is no checkout, inventory mutation, or persistence.
 

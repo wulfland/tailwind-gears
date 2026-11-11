@@ -34,7 +34,7 @@ If the run fails during `npx playwright install --with-deps chromium` or the bro
 **Starting point:** your fork with Actions enabled. The complete file is [`workflows/ci-with-arm.yml`](workflows/ci-with-arm.yml); only its `verify-arm` job is new.
 
 1. In your fork, create a branch named `practice/ch11-arm` from `main` using the branch selector.
-2. On that branch, open `.github/workflows/ci.yml`, select the edit control, and append the following job after the `verify` job. Keep `verify` unchanged and use the same action versions, so that the file stays consistent and a later dependency update changes them together.
+2. On that branch, open `.github/workflows/ci.yml`, select the edit control, and append the following job after the `verify` job. Keep `verify` unchanged and use the same action versions, so that the file stays consistent and a later dependency update changes them together. The sample locks the actions of this workflow in `.github/workflows/actions.lock`: `@v6` of both actions is covered, and a reference the lockfile does not contain, such as another version, is rejected when the workflow runs until you run `gh actions-lock` again.
 
 ```yaml
   verify-arm:
