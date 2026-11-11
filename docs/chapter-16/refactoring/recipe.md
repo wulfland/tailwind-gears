@@ -22,13 +22,18 @@ registers its routes. `createApp()` keeps its name, its signature, and its behav
 The `/api` fallthrough that answers 404 as JSON stays in `createApp()`, after the modules,
 because it must be registered last.
 
+Shards 2 and 3 move into the same module. In this sample they are handed over together, as
+one task and one pull request; on a codebase with more shards, each shard is its own pull
+request.
+
 ## Invariants (every shard, checked before merge)
 
 1. No behavior changes. Every existing test passes unchanged: `npm run check` is green and no
    test file is edited.
-2. `npm run test:exercise` still fails with the same assertion. The case-sensitive search is a
-   defect Chapter 2 left in the baseline on purpose; a refactoring that fixes it is not a
-   refactoring.
+2. `npm run test:exercise` gives the same result as before the shard. On the unfixed baseline
+   it fails with the same assertion, because the case-sensitive search is a defect Chapter 2
+   left in the baseline on purpose; on a fork with the search fix it passes. A refactoring
+   that changes that result is not a refactoring.
 3. `tests/boundaries.test.ts` passes: route modules import from `../catalog.ts` and
    `../../shared/product.ts` only.
 4. `git diff --color-moved=zebra` shows the handler bodies as moved lines, not as changed

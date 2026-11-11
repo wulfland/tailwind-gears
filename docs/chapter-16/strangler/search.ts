@@ -3,7 +3,8 @@
 // It owns no data: the items are passed in, so the same function could run in
 // another process fed by another source. Until the parity test says otherwise,
 // it must behave exactly like the implementation it replaces, including the
-// case-sensitive match that Chapter 2 left in the baseline on purpose.
+// case-sensitive match that Chapter 2 left in the baseline on purpose. On a
+// fork with the search fix, make the same change to the filter below.
 import type { Product, SortOrder } from '../shared/product.ts'
 
 const comparators: Record<SortOrder, ((left: Product, right: Product) => number) | undefined> = {
