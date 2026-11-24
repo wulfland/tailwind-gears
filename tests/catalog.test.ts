@@ -8,7 +8,9 @@ test('empty and whitespace searches return the entire catalog', () => {
 })
 
 test('search finds matching names and trims outer whitespace', () => {
-  assert.deepEqual(listProducts(' Helmet ').map(product => product.id), ['ridge-helmet', 'metro-helmet'])
+  for (const query of ['Helmet', 'HELMET', 'helmet', 'HeLmEt', '  eLm  ']) {
+    assert.deepEqual(listProducts(query).map(product => product.id), ['ridge-helmet', 'metro-helmet'])
+  }
 })
 
 test('unknown search has no matches', () => {
@@ -18,6 +20,9 @@ test('unknown search has no matches', () => {
 test('stock filtering can be combined with search', () => {
   assert.equal(listProducts('', 'featured', true).length, 7)
   assert.deepEqual(listProducts('Lock', 'featured', true), [])
+  assert.deepEqual(listProducts('lOcK').map(product => product.id), ['loop-lock'])
+  assert.deepEqual(listProducts('lOcK', 'featured', true), [])
+  assert.deepEqual(listProducts('hElMeT', 'price-asc', true).map(product => product.id), ['metro-helmet', 'ridge-helmet'])
 })
 
 test('sorting leaves source order intact', () => {

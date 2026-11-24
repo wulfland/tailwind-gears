@@ -12,9 +12,9 @@ export const products: Product[] = [
 ]
 
 export function listProducts(query = '', sort: SortOrder = 'featured', inStock = false): Product[] {
-  const term = query.trim()
+  const term = query.trim().toLowerCase()
   const result = products.filter(product =>
-    product.name.includes(term) && (!inStock || product.inStock),
+    product.name.toLowerCase().includes(term) && (!inStock || product.inStock),
   )
   if (sort === 'price-asc') result.sort((left, right) => left.priceCents - right.priceCents)
   if (sort === 'price-desc') result.sort((left, right) => right.priceCents - left.priceCents)
