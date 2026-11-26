@@ -43,7 +43,7 @@ The reference files are [`hypothesis.yml`](hypothesis.yml), the issue form; [`ex
 TG_EXPERIMENT=cheapest-first TG_EVENTS=./experiment-events.log npm run dev
 ```
 
-8. Open `http://localhost:5173` in two private browser windows (each gets its own cookie, so each is a visitor), and in one of them click a product to open its detail. Then analyze:
+8. Open `http://localhost:5173` in one regular browser window and one private window, and in one of them click a product to open its detail. The two keep separate cookies, so each is a visitor; two private windows are not enough, because browsers such as Chrome share one private session, and with it the cookie, across all private windows. Then analyze:
 
 ```sh
 node --import tsx scripts/analyze-experiment.ts experiment-events.log --mde 0.05
@@ -64,6 +64,8 @@ Expect about 500 visitors per variant, a difference somewhere around 5 points, a
 
 10. Send 2,000 more visitors, 3,000 in total, and analyze again. Expect about 1,500 per variant, a smallest detectable effect just under 5 points, and in most runs the verdict that the treatment met the registered effect at the registered level; the author's runs showed differences of 6.8, 5.9, and 4.9 points, and the last of those produced the verdict `a statistically significant difference, but smaller than the effect you said would matter`, which is the registered minimum doing its job.
 
+The analyzer checks the split before it reads anything else. If the two variants differ from 50/50 by more than chance explains (p below 0.001 in a chi-square test), it prints the two counts and `verdict: none`, with no rates and no replay, because a sample ratio mismatch means that the assignment or the logging is broken and the numbers behind it mean nothing. Whether a split is a mismatch depends on the sample: 1,543 against 1,459 visitors is ordinary variation (p = 0.125 on a run of November 26, 2026), and 52 against 48 is too, while 5,200 against 4,800 is a mismatch.
+
 ### Peeking at a change that does nothing
 
 11. Stop the server, start it again with a fresh events file, and send 3,000 visitors with no lift at all:
@@ -78,20 +80,20 @@ The replay prints the difference and the p-value after every 100 exposed visitor
 
 ### Deciding and cleaning up
 
-12. Record the decision in the hypothesis issue as a comment: the final numbers, which rule applied, and what you decided. In a fork that treats the simulated run as the experiment, the record says `ship` or `remove` according to the rule; say in the comment that the visitors were simulated.
+12. Record the decision in the hypothesis issue as a comment: the final numbers, which rule applied, and what you decided. In a fork that treats the simulated run as the experiment, the record says `ship` or `remove` according to the rule; say in the comment that the visitors were simulated. The analyzer's verdict is the statistical part of the rule only, and it says so under the verdict: a simulated run of a few minutes cannot show that the registered 14 days have passed or that the catalog's error rate and median response time held. Record both as not verified. In a live experiment you check them before you apply the rule.
 13. Commit the experiment files and the two edits, push, open a pull request against **your fork's `main`** that links the issue, and merge it. Then, as the record demands, either make `price-asc` the default order in a follow-up pull request and remove the experiment branch from `server/app.ts`, or remove the experiment code; either way delete the `cheapest-first` entry from the registry. An experiment flag that outlives its experiment is the debt Chapter 12 described. Delete `experiment-events.log` and `null-events.log`; they are ignored by Git but they are still files on your disk.
 
 | Step | Command | Expected on an unmodified fork |
 | --- | --- | --- |
 | 6 | `npm run check` | `tests 16`, `pass 16`, build succeeds; `npm run test:exercise` still fails |
-| 8 | analyzer after two private windows | `Not enough data to compare`, or a one-against-one comparison with the verdict `underpowered` |
+| 8 | analyzer after one regular and one private window | `Not enough data to compare`, or a one-against-one comparison with the verdict `underpowered` |
 | 9 | 1,000 visitors, 5-point lift | about 500 per variant; verdict `underpowered`; smallest detectable effect about 8 points |
 | 10 | 3,000 visitors, 5-point lift | about 1,500 per variant; smallest detectable effect just under 5 points; usually `met the registered effect` |
 | 11 | 3,000 visitors, no lift, `--peek 100` | final verdict `no significant difference`; zero to several peeks flagged |
 
 The table states expectations from simulated visitors; the simulated numbers differ on every run, and none of them says anything about real customers.
 
-**Expected result:** a registered hypothesis in an issue, an experiment that assigns visitors, records events, and analyzes them on your own server, an analysis that refused a verdict when it could not know and applied the registered rule when it could, a peeking replay you have seen with your own eyes, a decision recorded in the issue, and a fork from which the experiment flag has been removed again. **Return to the book:** continue with *Steering with OKRs and evidence-based decisions*.
+**Expected result:** a registered hypothesis in an issue, an experiment that assigns visitors, records events, and analyzes them on your own server, an analysis that refused a verdict when it could not know and applied the statistical part of the registered rule when it could, a peeking replay you have seen with your own eyes, a decision recorded in the issue, and a fork from which the experiment flag has been removed again. **Return to the book:** continue with *Steering with OKRs and evidence-based decisions*.
 
 ## Synthesizing customer feedback into hypotheses with an assistant and checking every claim
 

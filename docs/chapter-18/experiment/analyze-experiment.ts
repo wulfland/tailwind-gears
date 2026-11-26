@@ -4,9 +4,13 @@
 // the exposed visitors, the visitors who opened at least one product detail after
 // their first exposure, the conversion rates, the difference with a 95 percent
 // confidence interval and a two-sided z-test, a sample ratio check, and the
-// smallest effect the current sample could detect. Pass --peek N to replay the
-// exposures in order and print the p-value after every N visitors, which shows
-// why a test that is stopped the first time it looks significant is not a test.
+// smallest effect the current sample could detect. The sample ratio is checked
+// first: when the split differs from 50/50 by more than chance explains, the
+// script prints the counts and no rate, replay, or verdict. Pass --peek N to
+// replay the exposures in order and print the p-value after every N visitors,
+// which shows why a test that is stopped the first time it looks significant
+// is not a test. The verdict is the statistical part of a decision rule only:
+// the script does not check the registered duration or the guardrails.
 //
 //   node --import tsx scripts/analyze-experiment.ts experiment-events.log [--alpha 0.05] [--mde 0.05] [--peek 100]
 
@@ -82,31 +86,42 @@ function compare(control: { n: number; converted: number }, treatment: { n: numb
 
 const percent = (value: number) => `${(100 * value).toFixed(1)}%`
 
-if (peek > 0) {
-  console.log(`peeking after every ${peek} exposed visitors (alpha ${alpha}):`)
-  const totalVisitors = tally().control.n + tally().treatment.n
-  for (let limit = peek; limit <= totalVisitors; limit += peek) {
-    const { control, treatment } = tally(limit)
-    if (control.n === 0 || treatment.n === 0) continue
-    const result = compare(control, treatment)
-    const flag = result.pValue < alpha ? '  <- would have been called significant' : ''
-    console.log(`  after ${String(limit).padStart(5)} visitors: difference ${percent(result.difference).padStart(6)}, p = ${result.pValue.toFixed(3)}${flag}`)
-  }
-}
-
 const { control, treatment } = tally()
 if (control.n === 0 || treatment.n === 0) {
   console.log(`exposed visitors: control ${control.n}, treatment ${treatment.n}. Not enough data to compare.`)
   process.exit(0)
 }
 const result = compare(control, treatment)
+
+// The split is checked before any metric is read. A mismatch means that the
+// assignment or the logging is broken, so no rate, replay, or verdict follows.
+if (result.srmP < 0.001) {
+  console.log(`experiment cheapest-first, ${events.length} events, ${control.n + treatment.n} exposed visitors`)
+  console.log(`  sample ratio: ${control.n} vs ${treatment.n}, p = ${result.srmP.toFixed(3)}  <- mismatch`)
+  console.log('  verdict: none. The split differs from 50/50 by more than chance explains. Find the cause before you read any result.')
+  process.exit(0)
+}
+
+if (peek > 0) {
+  console.log(`peeking after every ${peek} exposed visitors (alpha ${alpha}):`)
+  const totalVisitors = control.n + treatment.n
+  for (let limit = peek; limit <= totalVisitors; limit += peek) {
+    const interim = tally(limit)
+    if (interim.control.n === 0 || interim.treatment.n === 0) continue
+    const look = compare(interim.control, interim.treatment)
+    const flag = look.pValue < alpha ? '  <- would have been called significant' : ''
+    console.log(`  after ${String(limit).padStart(5)} visitors: difference ${percent(look.difference).padStart(6)}, p = ${look.pValue.toFixed(3)}${flag}`)
+  }
+}
+
 console.log(`experiment cheapest-first, ${events.length} events, ${control.n + treatment.n} exposed visitors`)
 console.log(`  control:   ${control.n} visitors, ${control.converted} opened a detail (${percent(result.p1)})`)
 console.log(`  treatment: ${treatment.n} visitors, ${treatment.converted} opened a detail (${percent(result.p2)})`)
 console.log(`  difference: ${percent(result.difference)} (95% interval ${percent(result.interval[0])} to ${percent(result.interval[1])}), z = ${result.z.toFixed(2)}, p = ${result.pValue.toFixed(3)}`)
-console.log(`  sample ratio: ${control.n} vs ${treatment.n}, p = ${result.srmP.toFixed(3)}${result.srmP < 0.001 ? '  <- mismatch; do not trust the result' : ''}`)
+console.log(`  sample ratio: ${control.n} vs ${treatment.n}, p = ${result.srmP.toFixed(3)}`)
 console.log(`  smallest effect this sample could detect: about ${percent(result.detectable)} absolute; pre-registered minimum effect: ${percent(mde)}`)
 if (Math.min(control.n, treatment.n) < 50 || result.detectable > mde) console.log('  verdict: underpowered. The sample is too small to see the effect you registered, whatever p says.')
 else if (result.pValue < alpha && result.difference >= mde) console.log('  verdict: the treatment met the registered effect at the registered significance level.')
 else if (result.pValue < alpha) console.log('  verdict: a statistically significant difference, but smaller than the effect you said would matter.')
 else console.log('  verdict: no significant difference at the registered level.')
+console.log('  not checked here: the registered duration and the guardrails. The verdict covers the statistics only.')
