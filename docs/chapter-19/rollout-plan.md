@@ -5,7 +5,7 @@ For the Chapter 19 section *Rolling out Copilot and managing AI policy at scale*
 ## Scope and owner
 
 - Enterprise and organizations in scope: _(names)_
-- Plan: _Copilot Business or Copilot Enterprise; who decided and why_
+- Plan: _Copilot Business, Copilot Enterprise, or, for an eligible enterprise, Copilot access; who decided and why_
 - Owner of the rollout: _(name, team)_; AI manager role holders: _(names)_
 - Security and legal sign-off on the policy baseline: _(date, link to `policy-baseline.md`)_
 
@@ -32,13 +32,13 @@ Measure before the first wave, as Chapter 1 describes, so that the later numbers
 ## Access path
 
 - Enterprise: Copilot enabled for _specific organizations_, added per wave in __AI controls__.
-- Organization: seats assigned to _selected members and teams_ (or to _enterprise teams_), never to all members in the first two waves.
+- Seats: assigned by the organization owner to _selected members and teams_, or by an enterprise owner directly to _users or enterprise teams_ (Copilot Business or Copilot access), never to all members in the first two waves.
 - Removal: seats of people without activity for _60_ days are reviewed monthly from the last-activity report and removed by hand; GitHub does not remove them for you.
 
 ## Cost and who pays
 
 - Seats: _(count)_ x _(price per seat)_ per month, charged to cost center _(name)_.
-- AI credits: _(included credits per seat)_ pooled per billing entity; paid usage policy _(on or off)_; budget _(amount)_ per cost center with alerts at 75, 90, and 100 percent and _(stop at limit: yes or no)_.
+- AI credits: _(included credits per seat; none with Copilot access, where usage is billed from the first use)_ pooled per billing entity; paid usage policy _(on or off)_; budget _(amount)_ per cost center with alerts at 75, 90, and 100 percent and _(stop at limit: yes or no)_.
 - Agent sessions and cloud sandboxes draw on the same pool; who pays for unattended runs: _(cost center)_.
 
 ## Enablement

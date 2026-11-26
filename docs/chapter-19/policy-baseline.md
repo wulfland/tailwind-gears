@@ -5,7 +5,7 @@ For the Chapter 19 subsection *Governing AI policy at scale*. One row per contro
 | Control | Where it is set | Starting value for wave 0 | Who may change it | Review |
 | --- | --- | --- | --- | --- |
 | Copilot enablement per organization | Enterprise, __AI controls__, __Copilot__ | Specific organizations, added per wave | Enterprise owner | Each wave |
-| Seat assignment | Organization, or enterprise teams | Selected members and teams, with the last-activity report read monthly | Organization owner, AI manager | Monthly |
+| Seat assignment | Organization; or the enterprise, for direct assignment to users and enterprise teams with Copilot Business or Copilot access | Selected members and teams, with the last-activity report read monthly | Organization owner or enterprise owner, AI manager | Monthly |
 | Suggestions matching public code | Enterprise policy | Blocked, unless legal decides otherwise in writing | Enterprise owner with legal | Yearly |
 | Copilot in the cloud (cloud agent, cloud sandboxes) | Enterprise policy, then organization | Let organizations decide; pilot organizations on | Enterprise owner | Each wave |
 | Third-party agents (Claude, Codex, agent apps) | Enterprise, then organization | Off until the team's review budget (Chapter 17) and the agent rules (Chapter 12) are written | Enterprise owner | Quarterly |
