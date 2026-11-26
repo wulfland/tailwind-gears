@@ -15,7 +15,7 @@ The template files are [`team-map.md`](team-map.md), [`team-api.md`](team-api.md
 
 **Starting point:** your fork's clone URL, Git 2.25 or later (`git --version`), and Node.js 24 LTS. Work in a new directory outside your existing clone; nothing in this activity changes your fork. Step 5 is optional and uses the `scalar` command, which ships with Git 2.38 and later; step 7 is optional and builds a meta repository on your disk only.
 
-### Cloning the history without the files
+### Cloning the history and the top-level files only
 
 1. Clone your fork with a blob filter and a sparse checkout, replacing `YOUR-USERNAME`:
 
@@ -26,7 +26,7 @@ ls
 git sparse-checkout list
 ```
 
-Expect the directory to contain only the top-level files (`README.md`, `index.html`, `package.json`, `package-lock.json`, `playwright.config.ts`, `tsconfig.json`, and the dotfiles) and `git sparse-checkout list` to print nothing, because no directory is in the checkout yet (see Git, [git clone](https://git-scm.com/docs/git-clone) and [git sparse-checkout](https://git-scm.com/docs/git-sparse-checkout)). GitHub serves the blob filter; a server that does not support it answers with `warning: filtering not recognized by server, ignoring` and sends a full clone, which is what the author observed when cloning from a local path for this guide.
+Expect the directory to contain only the top-level files (`README.md`, `index.html`, `package.json`, `package-lock.json`, `playwright.config.ts`, `tsconfig.json`, and the dotfiles) and `git sparse-checkout list` to print nothing, because no directory is in the checkout yet (see Git, [git clone](https://git-scm.com/docs/git-clone) and [git sparse-checkout](https://git-scm.com/docs/git-sparse-checkout)). The clone downloads every commit and tree but only the file contents its checkout needs, here those of the top-level files; Git fetches further contents when a later checkout needs them. GitHub serves the blob filter; a server that does not support it answers with `warning: filtering not recognized by server, ignoring` and sends a full clone, which is what the author observed when cloning from a local path for this guide.
 
 ### Working in the server's slice
 
@@ -113,16 +113,18 @@ These three templates are for your own team and repository, not for the fork. Th
 
 ### The team map
 
-[`team-map.md`](team-map.md) holds the architecture map of the baseline, already filled in, and open sections for the communication map, the places where the two disagree, and the contract rule. Two commands produce the maps for any repository:
+[`team-map.md`](team-map.md) holds the architecture map of the baseline, already filled in, and open sections for the communication map, the places where the two disagree, and the contract rule. Two commands give you starting points for the maps of any repository; run the second once per directory:
 
 ```sh
 grep -rn "from '\.\." server src shared
-git shortlog -sn HEAD server src shared
+git shortlog -sn HEAD -- server
+git shortlog -sn HEAD -- src
+git shortlog -sn HEAD -- shared
 ```
 
-On the baseline, the first command shows `server/app.ts`, `server/catalog.ts`, and `src/catalog.ts` importing `../shared/product.ts` and nothing else crossing a directory; the second lists one author. In your own repository, replace the directories with your module roots, and read the second command's output per directory as the communication structure the code was built in: who touches which part, and whose pull requests cross the boundary.
+On the baseline, the first command shows `server/app.ts`, `server/catalog.ts`, and `src/catalog.ts` importing `../shared/product.ts` and nothing else crossing a directory; the second lists one author for each directory. In your own repository, replace the directories with your module roots, and read the output per directory as a first hint: who touches which part, and who changes files on both sides of a boundary. The history shows who changed the code, not how the teams communicate, so ask the teams as well.
 
-To record a contract rule, add a `CODEOWNERS` line for the shared file that names both owning teams, for example `/shared/product.ts  @ORG/catalog-api @ORG/storefront`. Teams must belong to the organization and have write access to the repository, the file must stay under 3 MB, and the last matching pattern wins (see GitHub, [About code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)). Requiring a code owner's approval before merging is a separate ruleset setting, which Chapter 12 covers.
+To record a contract rule, add a `CODEOWNERS` line for the shared file that names both owning teams, for example `/shared/product.ts  @ORG/catalog-api @ORG/storefront`. Teams must belong to the organization and have write access to the repository, the file must stay under 3 MB, and the last matching pattern wins (see GitHub, [About code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)). Requiring a code owner's approval before merging is a separate ruleset setting, which Chapter 12 covers; with it, an approval from either listed team is enough, so a rule that both teams must approve needs separate enforcement or the teams' agreement.
 
 ### The team API and the request form
 
@@ -134,4 +136,4 @@ To record a contract rule, add a `CODEOWNERS` line for the shared file that name
 
 [`delegation.md`](delegation.md) is the worksheet from the end of the chapter's last section: a table with one row per backlog item and three decisions (who does the work, what gate it passes before it merges, and what must be written down before an agent could take it), a review budget, and an agents section to add to the team API. [`backlog-items.md`](backlog-items.md) supplies six constructed items drawn from the book's earlier chapters, from the case-sensitive search to a scanner finding, with the facts needed to decide, and ends with one possible set of answers for comparison afterward; use your team's real backlog instead when you have it.
 
-For the review budget, count the pull requests your team reviewed and merged in the last month and estimate the minutes each one took to read properly; the product is the hours a month the team spends reviewing, and the limit on agent tasks in flight follows from it, not from the plan's allowance. Chapter 1's measurements, review waiting time and pull request size, are how you check the limit later. The worksheet starts no agent; Chapters 8 and 12 are where you act on the agreement it records.
+For the review budget, count the pull requests your team reviewed and merged in the last month and estimate the minutes each one took to read properly; the product is the hours a month the team spends reviewing, human-authored pull requests included. Reserve the hours those need, and set the limit on agent tasks in flight separately, from the reviewers' availability and not from the plan's allowance. Chapter 1's measurements, review waiting time and pull request size, are how you check the limit later. The worksheet starts no agent; Chapters 8 and 12 are where you act on the agreement it records.

@@ -16,9 +16,17 @@ The browser code talks to the server over HTTP (`GET /api/products`, `GET /api/p
 
 ## Communication map (from the history and the scenario)
 
-Command: `git shortlog -sn HEAD server src shared`
+Commands, one per directory:
 
-Names in the history: _(fill in)_
+```sh
+git shortlog -sn HEAD -- server
+git shortlog -sn HEAD -- src
+git shortlog -sn HEAD -- shared
+```
+
+Names in the history, per directory: _(fill in)_
+
+The history shows who changed the files, not how the teams talk to each other. Ask the teams how requirements reach them and whom they ask before a change; commit history alone cannot show that.
 
 Constructed scenario:
 
@@ -38,4 +46,5 @@ _(For each place in the list above: does the architecture have a boundary there,
 - Owner of `shared/product.ts`: _(both teams; in a personal fork, your account stands in for both)_
 - How it changes: _(a pull request that a member of each team reviews; consumers are named in the description)_
 - What a consumer may rely on: _(the exported types and their field names; prices stay integer cents)_
-- Recorded in: `.github/CODEOWNERS`
+- Recorded in: `.github/CODEOWNERS`, which requests a review from both teams
+- Enforced by: _(with required code-owner review, an approval from either listed team is enough; if both teams must approve, that needs a rule of its own or the teams' agreement)_

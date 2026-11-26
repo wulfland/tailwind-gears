@@ -20,7 +20,7 @@ The pull request updates one dependency, the suite passes, and the changelog lis
 
 ## 5. Move the API routes into `server/routes/`
 
-A refactoring in three shards with five invariants, among them that no test changes and that the exercise check still fails. A recipe and an exemplar exist. (Chapter 16's fourth activity.)
+A refactoring in three shards with five invariants, among them that no test changes and that the exercise check keeps its result. A recipe and an exemplar exist. (Chapter 16's fourth activity.)
 
 ## 6. Code scanning reports path injection in the image route
 
@@ -32,7 +32,7 @@ Compare with your table afterward; it is one answer, not the answer.
 
 | Item | Who | Gate | Written down first |
 | --- | --- | --- | --- |
-| 1 | An agent, from the issue that names the failing test | The acceptance test passes, the suite is unchanged, a person reviews the two lines and the new tests | The failing test (already exists) |
+| 1 | An agent, from the issue that names the failing test | The acceptance test and the new regression tests pass, no existing test changes, a person reviews the two lines and the new tests | The failing test (already exists) |
 | 2 | A person, with an assistant for the parts | The product decision is in the issue before any code | The decision: which categories, one or many, how it combines with search |
 | 3 | An agent, from a request that demands a location for every claim | A person checks five claims against the code | The request itself, and the characterization tests that follow |
 | 4 | Dependabot opens it; a person decides | The suite, the dependency review, and a read of the changelog entry | Nothing new; the cooldown and grouping are configured |

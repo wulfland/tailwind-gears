@@ -15,8 +15,9 @@ For the Chapter 17 delegation worksheet, *Filling in the delegation table for yo
 
 - Pull requests reviewed and merged in the last month: _(count)_
 - Minutes per pull request, read properly: _(estimate)_
-- Hours per month spent reviewing: _(count x minutes / 60)_
-- Limit on agent tasks in flight: _(derived from the budget, not from the allowance)_
+- Hours per month spent reviewing: _(count x minutes / 60; this covers every pull request, human-authored ones included)_
+- Hours reserved for human-authored pull requests: _(estimate)_
+- Limit on agent tasks in flight: _(set separately, from the reviewers' availability after that reserve, not from the allowance)_
 - How we check it: review waiting time and pull request size, measured as in Chapter 1
 
 ## Agents section for the team API
