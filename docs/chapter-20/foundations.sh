@@ -8,7 +8,11 @@ have() { if api "repos/$REPO/contents/$1" --silent; then echo yes; else echo no;
 median() { sort -n | awk '{a[NR]=$1} END {if (NR==0) print "n/a"; else if (NR%2) print a[(NR+1)/2]; else print (a[NR/2]+a[NR/2+1])/2}'; }
 
 DEFAULT=$(api "repos/$REPO" --jq .default_branch)
+# Rulesets and classic branch protection are two mechanisms with two answers.
 RULES=$(api "repos/$REPO/rules/branches/$DEFAULT" --jq length || echo "not visible")
+RULECHECKS=$(api "repos/$REPO/rules/branches/$DEFAULT" --jq '[.[] | select(.type == "required_status_checks") | .parameters.required_status_checks | length] | add // 0' || echo "not visible")
+CLASSIC=$(api "repos/$REPO/branches/$DEFAULT" --jq 'if .protection.enabled then "yes" else "no" end' || echo "not visible")
+CLASSICCHECKS=$(api "repos/$REPO/branches/$DEFAULT" --jq '.protection.required_status_checks.contexts | length' || echo "not visible")
 WORKFLOWS=$(api "repos/$REPO/actions/workflows" --jq '[.workflows[] | select(.path | startswith(".github/workflows/"))] | length')
 TESTS=$(api "repos/$REPO/contents/tests" --jq '[.[] | select(.name | endswith(".test.ts"))] | length' || echo 0)
 E2E=$(api "repos/$REPO/contents/e2e" --jq '[.[] | select(.name | endswith(".spec.ts"))] | length' || echo 0)
@@ -21,7 +25,9 @@ echo "## Foundations of $REPO (default branch: $DEFAULT)"
 echo
 echo "| Foundation | In this repository | Chapter |"
 echo "| --- | --- | --- |"
-echo "| Rules active on the default branch | $RULES | 12 |"
+echo "| Ruleset rules active on the default branch | $RULES | 12 |"
+echo "| Classic branch protection on the default branch | $CLASSIC | 12 |"
+echo "| Required status checks: in rulesets; in classic protection | $RULECHECKS; $CLASSICCHECKS | 12 |"
 echo "| Workflow files | $WORKFLOWS | 11 |"
 echo "| Unit and API test files; browser test files | $TESTS; $E2E | 13 |"
 echo "| Code scanning default setup | $SCANNING | 15 |"
