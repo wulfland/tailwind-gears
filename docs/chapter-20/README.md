@@ -2,16 +2,16 @@
 
 The chapter can be read without doing this activity or using the templates. This guide keeps the activity's starting point, instructions, expected result, and reading-resumption point together, and it holds the two templates and the checklist the chapter's sections mention. All scenarios use fictional sample data, the Tailwind Gears company whose transformation the chapter describes is constructed, and nothing here authorizes changes in the author's repository.
 
-A transformation does not run in a solo fork, which is why this chapter has one activity: a read-only scorecard of the foundations and the flow of one repository, the smallest form of the playbook's first stage. The canvas, the ledger, and the checklist are for your own organization.
+A transformation does not run in a solo fork, which is why this chapter has one activity: a read-only scorecard of the foundations and the flow of one repository, followed by one foundation that you add to your fork before you run it again, the smallest form of the playbook's first stage. The canvas, the ledger, and the checklist are for your own organization.
 
 Use **your fork** for the activity. It works on the unfixed baseline as well as on a fork that completed earlier chapters, and the two score differently on purpose; do not repeat the search fix or implement the unresolved category feature for this chapter.
 
 - [Scoring your fork's foundations and flow before scaling AI](#scoring-your-forks-foundations-and-flow-before-scaling-ai)
 - [Transformation templates](#transformation-templates): the transformation canvas, the ROI ledger, and the AI theater checklist
 
-GitHub product instructions were checked against official documentation on November 4, 2026. The activity is free and read-only: it needs no Copilot plan, starts no workflow or agent, and creates nothing on GitHub. Check current access, policy, and billing before using cloud services or preview features. Public practice material must not contain real customer information, internal conversations, or credentials.
+GitHub product instructions were checked against official documentation on November 4, 2026, and the branch rules endpoints again on November 26, 2026. Running the scorecard script is free and read-only: it needs no Copilot plan, starts no workflow or agent, and creates nothing on GitHub. The later steps are not read-only: step 5 changes your fork by adding one foundation, and the optional steps 6 and 7 let the Copilot cloud agent add it, which needs a Copilot plan and consumes AI credits. Check current access, policy, and billing before using cloud services or preview features. Public practice material must not contain real customer information, internal conversations, or credentials.
 
-The reference files are [`foundations.sh`](foundations.sh), [`transformation-canvas.md`](transformation-canvas.md), and [`roi-ledger.md`](roi-ledger.md). The outputs quoted below were observed on the author's machine on November 4, 2026, against the public sample `wulfland/tailwind-gears` with the GitHub CLI 2.102; a fresh fork shows the same foundations and an empty flow table, and a fork that completed earlier chapters shows its own history. Treat every expected result as an expectation to confirm.
+The reference files are [`foundations.sh`](foundations.sh), [`transformation-canvas.md`](transformation-canvas.md), and [`roi-ledger.md`](roi-ledger.md). The outputs quoted below were observed on the author's machine against the public sample `wulfland/tailwind-gears` with the GitHub CLI 2.102, the foundations table on November 26, 2026 and the flow table on November 4, 2026; a fresh fork shows the same foundations and an empty flow table, and a fork that completed earlier chapters shows its own history. Treat every expected result as an expectation to confirm.
 
 ## Scoring your fork's foundations and flow before scaling AI
 
@@ -19,11 +19,13 @@ The reference files are [`foundations.sh`](foundations.sh), [`transformation-can
 
 ### What the script reads
 
-The script asks the GitHub REST API twelve questions about the repository's foundations and a few about its recent flow, all read-only (see the [REST API documentation](https://docs.github.com/en/rest)). Table 1 lists every call so that you can check there is nothing in it you would not run against your own repository.
+The script asks the GitHub REST API fourteen questions about the repository's foundations and a few about its recent flow, all read-only (see the [REST API documentation](https://docs.github.com/en/rest)). Table 1 lists every call so that you can check there is nothing in it you would not run against your own repository.
 
 | Row in the output | Endpoint | Notes |
 | --- | --- | --- |
-| Rules active on the default branch | `GET /repos/{owner}/{repo}/rules/branches/{branch}` | Counts rulesets and classic protection that apply to the branch |
+| Ruleset rules active on the default branch | `GET /repos/{owner}/{repo}/rules/branches/{branch}` | Counts the active rules that rulesets apply to the branch; rulesets in evaluate mode and classic branch protection are not in this answer |
+| Classic branch protection on the default branch | `GET /repos/{owner}/{repo}/branches/{branch}` | `yes` when the `protection` field says that classic protection is enabled |
+| Required status checks: in rulesets; in classic protection | Both calls above | The checks named in `required_status_checks` rules, then the contexts of the classic protection; `0; 0` means that nothing has to pass before a merge |
 | Workflow files | `GET /repos/{owner}/{repo}/actions/workflows` | Files under `.github/workflows/` |
 | Test files | `GET /repos/{owner}/{repo}/contents/tests` and `/contents/e2e` | Counts `*.test.ts` and `*.spec.ts` |
 | Code scanning default setup | `GET /repos/{owner}/{repo}/code-scanning/default-setup` | Needs admin access to the repository; prints `not visible` otherwise |
@@ -46,12 +48,14 @@ The script writes nothing, needs no `jq` (it uses the CLI's built-in `--jq` filt
    sh docs/chapter-20/foundations.sh YOUR-USERNAME/tailwind-gears
    ```
 
-2. Read the foundations table. Against the public sample on November 4, 2026, it looked like this, and an unmodified fork shows the same values apart from code scanning, which an owner sees as `not-configured` and a non-owner as `not visible`:
+2. Read the foundations table. Against the public sample on November 26, 2026, it looked like this, and an unmodified fork shows the same values apart from code scanning, which an owner sees as `not-configured` and a non-owner as `not visible`:
 
    ```text
    | Foundation | In this repository | Chapter |
    | --- | --- | --- |
-   | Rules active on the default branch | 0 | 12 |
+   | Ruleset rules active on the default branch | 0 | 12 |
+   | Classic branch protection on the default branch | no | 12 |
+   | Required status checks: in rulesets; in classic protection | 0; 0 | 12 |
    | Workflow files | 1 | 11 |
    | Unit and API test files; browser test files | 3; 1 | 13 |
    | Code scanning default setup | not-configured | 15 |
@@ -65,7 +69,7 @@ The script writes nothing, needs no `jq` (it uses the CLI's built-in `--jq` filt
    | Discussions enabled | false | 4 |
    ```
 
-   The baseline has a workflow, tests, push protection, one environment, and an instructions file, and nothing else: no rules on `main`, no code scanning, no Dependabot, no code owners, no agents file, no flags. That is a repository on which an assistant can help a person and an agent should not yet be left alone, which is the chapter's point about foundations preceding scale-out. A fork that completed Chapters 11 to 15 shows rules, scanning, Dependabot, and more environments; one that completed Chapter 12 shows the flag registry.
+   The baseline has a workflow, tests, push protection, one environment, and an instructions file, and nothing else: no rules and no required checks on `main`, no code scanning, no Dependabot, no code owners, no agents file, no flags. That is a repository on which an assistant can help a person and an agent should not yet be left alone, which is the chapter's point about foundations preceding scale-out. A fork that completed Chapters 11 to 15 shows rules, scanning, Dependabot, and more environments; one that completed Chapter 12 shows the flag registry.
 
 3. Read the flow table, which splits the last 30 closed pull requests by who opened them, and the run table underneath. On a fresh fork both say that there is nothing yet, because a fork starts with the sample's files and none of its history. On a fork with the exercises of Chapters 3, 11, 12, and 16 behind it, the rows for people and for the Copilot agent sit side by side with how many merged, the median hours to merge, the median changed lines, and how many a person reviewed. Against the public sample on November 4, 2026, it read:
 
@@ -78,7 +82,7 @@ The script writes nothing, needs no `jq` (it uses the CLI's built-in `--jq` filt
 
    The people's row is the author merging guide branches without a second reviewer; the agent's row is three demonstration pull requests that the cloud agent opened and that were closed without merging. Fourteen of fourteen runs on `main` were green at a median of 0.8 minutes. Those numbers describe a documentation repository maintained by one person, and the chapter's rule applies: compare a repository with its own earlier baseline, never with another team's. What the split is for is the chapter's third theater signal: when your fork has agent pull requests, you can see whether they were larger, faster to merge, or less often read by a person than your own, which is the adoption-versus-outcome question on the smallest data set that can answer it.
 4. Write the two tables into the [transformation canvas](transformation-canvas.md) as the baseline of this repository, under *Metrics that say whether* and *The first constraint*. On the baseline, the first constraint is not review but the absence of the gates that make review trustworthy.
-5. Pick the one missing foundation you would add before giving this repository to an agent, add it from the chapter the row names, and run the script again. The ruleset of Chapter 12 changes the first row from `0` to the number of rules; a `.github/dependabot.yml` from Chapter 15 changes its row to `yes`; an `AGENTS.md` from Chapter 8 changes its row to `yes`. The second run is the system answering, and the difference between the two runs is a line in the canvas with a date on it.
+5. Pick the one missing foundation you would add before giving this repository to an agent, add it from the chapter the row names, and run the script again. The ruleset of Chapter 12 changes the first row from `0` to the number of rules and the required-checks row from `0; 0` to `1; 0`, because it requires the check `verify`; a `.github/dependabot.yml` from Chapter 15 changes its row to `yes`; an `AGENTS.md` from Chapter 8 changes its row to `yes`. The second run is the system answering, and the difference between the two runs is a line in the canvas with a date on it.
 
 ### Letting the agent add the foundation (optional)
 

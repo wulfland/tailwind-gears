@@ -16,12 +16,15 @@ Two rules keep the ledger honest. Every line names its source and the date it wa
 | --- | --- | --- | --- |
 | Seats | _(count x price)_ | Billing, Chapter 19 | |
 | AI credits beyond the pooled allowance | _(amount)_ | Budgets and usage report | |
-| Agent sessions and unattended loops | _(amount, share of the credits)_ | Usage metrics per client | |
+| Of which agent sessions and unattended loops (part of the line above; do not add it again) | _(amount)_ | Usage metrics per client | |
+| Compute that agent sessions use beyond the included allowance (cloud sandboxes, GitHub Actions), billed apart from AI credits | _(amount)_ | Billing, Actions usage | |
 | Enablement time: champions, office hours, workshops | _(hours x loaded rate)_ | Calendar, time records | |
-| Learning time granted to the teams | _(hours per developer)_ | The rollout plan | |
+| Learning time granted to the teams | _(hours x loaded rate)_ | The rollout plan | |
 | Review time: hours reading agent pull requests | _(hours x loaded rate)_ | Chapter 17's review budget | |
 | Platform work: instruction files, Spaces, MCP servers, policy | _(hours x loaded rate)_ | Platform team backlog | |
-| Rework attributed to generated changes | _(reverted or rewritten pull requests)_ | Deployment rework rate, churn | |
+| Rework attributed to generated changes | _(hours on reverted or rewritten pull requests x loaded rate)_ | Deployment rework rate, churn | |
+
+Two rules for the sum. The agent-session line shows what the loops cost inside the AI credits, so it stays out of the sum; only the compute those sessions use is a line of its own. Every time line enters the sum as hours multiplied by the loaded hourly rate, the salary plus the employer's costs, and a time line without a price is not part of the investment yet.
 
 ## The dip
 
@@ -59,7 +62,7 @@ The dip is expected; DORA's 2026 report calls it the tuition cost of the transfo
 ## The ROI line
 
 - Value this period: _(the returns above, priced only where the price is defensible: hours of rework avoided, incidents avoided, revenue from the product outcome)_
-- Investment this period: _(the sum of the cost lines)_
+- Investment this period: _(the sum of the cost lines, with agent sessions counted once and every time line priced)_
 - Return on investment: _(value minus investment, divided by investment)_, with the range from a conservative and an optimistic reading: _(low to high)_
 - What this number cannot say: _(example: whether the lead time would have improved without the tool, because the pilot had no control group)_
 
